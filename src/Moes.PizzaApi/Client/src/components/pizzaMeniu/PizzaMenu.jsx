@@ -78,15 +78,29 @@ export default function PizzaMenu() {
     setPizza(DEFAULT_PIZZA);
   };
 
-  const addToCart = () => {
-    // const pizzaToAdd = {
-    //   name: pizzaSpecials.name,
-    //   size: selectedSize,
-    //   toppings: selectedToppings,
-    // };
+  const addToCart = async () => {
+    try {
+      const orderData = {
+        name: pizza.special?.name,
+        total: price,
+        toppings: pizza.toppings.map((topping) => topping.name),
+        size: pizza.size,
+      };
 
-    // setOrder([...order, pizzaToAdd]);
-    closeModal();
+      console.log('Request Data:', orderData);
+
+      const response = await axios.post(`${HOST}/api/pizzaorder`, orderData);
+
+      console.log('Response Data:', response.data);
+
+      if (response.status === 200) {
+        closeModal();
+      } else {
+        console.error('Error creating the order:', response.data);
+      }
+    } catch (error) {
+      console.error('Error creating the order:', error);
+    }
   };
 
   const addTopping = (toppingId) => {
@@ -207,7 +221,7 @@ export default function PizzaMenu() {
             <div className="mb-3">
               <label className="form-label">total price: {price}€</label>
               <br />
-              <Button variant="primary" onClick={addToCart}>
+              <Button type="submit" variant="primary" onClick={addToCart}>
                 Add Order
               </Button>
             </div>
